@@ -59,6 +59,9 @@ function Chat() {
           </IconButton>
         </form>
       </div>
+      <div>
+        test
+      </div>
     </div>
   )
 }
