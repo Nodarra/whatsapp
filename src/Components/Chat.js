@@ -1,10 +1,26 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../Styles/Chat.css'
 import { Avatar } from '@material-ui/core'
 import { IconButton } from '@material-ui/core'
 import { AttachFile, MoreVert, SearchOutlined, InsertEmoticon, Send, Mic } from '@material-ui/icons';
+import axios from './axios';
 
-function Chat() {
+function Chat({ messages }) {
+  const [input, setInput] = useState("")
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+
+    await axios.post('/messages/new', {
+      message: input,
+      name: "Dino Sisic",
+      timestamp: "Just now",
+      received: true
+    })
+
+    setInput('');
+  }
+
   return (
     <div className="chat">
       <div className="chat-header">
@@ -29,17 +45,13 @@ function Chat() {
       </div>
 
       <div className="chat-body">
-        <p className="chat-message">
-          <span className="chat-name">Nodarra</span>
-          This is a message
-          <span className="timestamp">{new Date().toUTCString()}</span>
-        </p>
-
-        <p className="chat-message chat-sent">
-          <span className="chat-name">Nodarra</span>
-          This is a message
-          <span className="timestamp">{new Date().toUTCString()}</span>
-        </p>
+        {messages.map((message) => (
+          <p className={`chat-message ${message.received && "chat-sent"}`}>
+            <span className="chat-name">{message.name}</span>
+            {message.message}
+            <span className="timestamp">{message.timestamp}</span>
+          </p>
+        ))}
       </div>
 
       <div className="chat-input">
@@ -48,10 +60,12 @@ function Chat() {
         </IconButton>
         <form>
           <input 
+            value={input}
+            onChange={e => setInput(e.target.value)}
             placeholder="Type a message"
             type="text"
           />
-          <IconButton type="submit">
+          <IconButton type="submit" onClick={sendMessage}>
             <Send />
           </IconButton>
           <IconButton >
